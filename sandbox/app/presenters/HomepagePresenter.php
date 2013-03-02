@@ -5,6 +5,11 @@
 class HomepagePresenter extends BasePresenter
 {
 
+    public function renderDefault()
+    {
+        $this->template->tasks = $this->taskRepository->findIncomplete();
+    }
+    
     /** @var Todo\TaskRepository */
     private $taskRepository;
 
@@ -12,11 +17,6 @@ class HomepagePresenter extends BasePresenter
     {
         parent::startup();
         $this->taskRepository = $this->context->taskRepository;
-    }
-
-    public function renderDefault()
-    {
-        $this->template->tasks = $this->taskRepository->findIncomplete();
     }
 
 }

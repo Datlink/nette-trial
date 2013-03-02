@@ -13,7 +13,7 @@
 	<meta name="description" content="">
 	<meta name="robots" content="{$robots}" n:ifset="$robots">
 
-	<title>{block title|striptags|upper}Nette Application Skeleton{/block}</title>
+    <title>{block title|stripTags|strip}Úkolníček{/block}</title>
 
 	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/screen.css">
 	<link rel="stylesheet" media="print" href="{$basePath}/css/print.css">
@@ -22,9 +22,7 @@
 </head>
 
 <body>
-	<script> document.body.className+=' js' </script>
-
-	<div id="header">
+<div id="header">
     <div id="header-inner">
         <div class="title"><a href="{link Homepage:}">Úkolníček</a></div>
     </div>
@@ -33,8 +31,8 @@
 <div id="container">
     <div id="sidebar">
         <div class="task-lists">
-            <ul>
-                <li n:foreach="$lists as $list"><a href="{link Task: id => $list->id}">{$list->title}</a></li>
+            <ul n:inner-foreach="$lists as $list">
+                <li><a n:href="Task: $list->id">{$list->title}</a></li>
             </ul>
         </div>
     </div>
@@ -49,11 +47,5 @@
 
     </div>
 </div>
-
-	{block scripts}
-	<script src="{$basePath}/js/jquery.js"></script>
-	<script src="{$basePath}/js/netteForms.js"></script>
-	<script src="{$basePath}/js/main.js"></script>
-	{/block}
 </body>
 </html>
