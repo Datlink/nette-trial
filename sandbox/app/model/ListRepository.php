@@ -15,4 +15,12 @@ class ListRepository extends Repository
     {
         return $list->related('task')->order('created');
     }
+    
+    /** Vytvoření seznamu úkolů **/
+    public function createList($title)
+    {
+        return $this->getTable()->insert(array(
+            'title' => $title
+        ));
+    }
 }
