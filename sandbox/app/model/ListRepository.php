@@ -11,6 +11,7 @@ class ListRepository extends Repository
     {
         return $this->findBy(array('id' => $id))->fetch();
     }
+    
     public function tasksOf(Nette\Database\Table\ActiveRow $list)
     {
         return $list->related('task')->order('created');

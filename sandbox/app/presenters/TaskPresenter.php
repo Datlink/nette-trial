@@ -52,9 +52,16 @@ class TaskPresenter extends BasePresenter
         }
     }
     
-    public function renderDefault()
+    public function renderDefault($id)
     {
         $this->template->list = $this->list;
-        $this->template->tasks = $this->listRepository->tasksOf($this->list);
+    }
+    
+    protected function createComponentTaskList()
+    {
+        if($this->list === NULL) {
+            $this->error('Wrong action');
+        }
+        return new Todo\TaskListControl($this->listRepository->tasksOf($this->list), $this->taskRepository);
     }
 }

@@ -22,5 +22,11 @@ class TaskRepository extends Repository
             'list_id' => $listId
         ));
     }
+    
+    // označení úkolu jako hotový
+    public function markDone($id)
+    {
+        $this->findBy(array('id' => $id))->update(array('done' => 1));
+    }
 
 }
