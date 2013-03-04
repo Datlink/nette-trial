@@ -1,6 +1,5 @@
 <?php
-
-use Nette\Security,
+use Nette\Security as NS,
 	Nette\Utils\Strings;
 
 
@@ -17,16 +16,17 @@ CREATE TABLE users (
 /**
  * Users authenticator.
  */
-class Authenticator extends Nette\Object implements Security\IAuthenticator
+class Authenticator extends Nette\Object implements NS\IAuthenticator
 {
 	/** @var Nette\Database\Connection */
 	private $database;
+    
+    private $userRepository;
 
-
-
-	public function __construct(Nette\Database\Connection $database)
+	public function __construct(Nette\Database\Connection $database, Todo\UserRepository $userRepository)
 	{
 		$this->database = $database;
+        $this->userRepository = $userRepository;
 	}
 
 
@@ -39,18 +39,18 @@ class Authenticator extends Nette\Object implements Security\IAuthenticator
 	public function authenticate(array $credentials)
 	{
 		list($username, $password) = $credentials;
-		$row = $this->database->table('users')->where('username', $username)->fetch();
-
-		if (!$row) {
-			throw new Security\AuthenticationException('The username is incorrect.', self::IDENTITY_NOT_FOUND);
-		}
-
-		if ($row->password !== $this->calculateHash($password, $row->password)) {
-			throw new Security\AuthenticationException('The password is incorrect.', self::INVALID_CREDENTIAL);
-		}
-
-		unset($row->password);
-		return new Security\Identity($row->id, $row->role, $row->toArray());
+        $row = $this->userRepository->findByName($username);
+        
+        if (!$row) {
+            throw new NS\AuthenticationException("User '$username' not found.", self::IDENTITY_NOT_FOUND);
+        }
+        
+        if ($row->password !== self::calculateHash($password, $row->password)) {
+            throw new NS\AuthenticationException("Invalid password.", self::INVALID_CREDENTIAL);
+        }
+        
+        unset($row->password);
+        return new NS\Identity($row->id, NULL, $row->toArray());
 	}
 
 
@@ -60,12 +60,12 @@ class Authenticator extends Nette\Object implements Security\IAuthenticator
 	 * @param  string
 	 * @return string
 	 */
-	public static function calculateHash($password, $salt = NULL)
-	{
-		if ($password === Strings::upper($password)) { // perhaps caps lock is on
-			$password = Strings::lower($password);
-		}
-		return crypt($password, $salt ?: '$2a$07$' . Strings::random(22));
-	}
+	public static function calculateHash($password, $salt = null)
+    {
+        if ($salt === null) {
+            $salt = '$2a$07$' . Nette\Utils\Strings::random(32) . '$';
+        }
+        return crypt($password, $salt);
+    }
 
 }

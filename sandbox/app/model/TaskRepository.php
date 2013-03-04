@@ -28,5 +28,11 @@ class TaskRepository extends Repository
     {
         $this->findBy(array('id' => $id))->update(array('done' => 1));
     }
+    
+    // najít nekompletní úkoly podle uživatele
+    public function findIncompleteByUser($userId)
+    {
+        return $this->findIncomplete()->where(array('user_id' => $userId));
+    }
 
 }

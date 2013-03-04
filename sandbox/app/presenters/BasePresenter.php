@@ -22,6 +22,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     /** Formulář pro přidání seznamu úkolů **/
     protected function createComponentNewListForm($name)
     {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }
+        
         $form = new Form($this, $name);
         $form->addText('title', 'Název:', 15, 50)
             ->addRule(Form::FILLED, 'Musíte zadat název seznamu úkolů.');
@@ -35,5 +39,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
         $list = $this->listRepository->createList($form->values->title);
         $this->flashMessage('Seznam úkolů založen.', 'success');
         $this->redirect('Task:default', $list->id);
+    }
+    
+    // odhlášení uživatele
+    public function handleSignOut()
+    {
+        $this->getUser()->logout();
+        $this->redirect('Sign:in');
     }
 }

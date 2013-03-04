@@ -13,6 +13,11 @@ class TaskPresenter extends BasePresenter
     protected function startup()
     {
         parent::startup();
+        
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }
+        
         $this->listRepository = $this->context->listRepository;
         $this->userRepository = $this->context->userRepository; // získáme model pro práci s uživateli
         $this->taskRepository = $this->context->taskRepository;
@@ -27,7 +32,8 @@ class TaskPresenter extends BasePresenter
                 ->addRule(Form::FILLED, 'Je nutné zadat text úkolu.');
         $form->addSelect('userId', 'Pro:', $userPairs)
                 ->setPrompt('- Vyberte -')
-                ->addRule(Form::FILLED, 'Je nutné vybrat, komu je úkol přiřazen.');
+                ->addRule(Form::FILLED, 'Je nutné vybrat, komu je úkol přiřazen.')
+                ->setDefaultValue($this->getUser()->getId());
         $form->addSubmit('create', 'Vytvořit');
         $form->onSuccess[] = $this->taskFormSubmitted;
         return $form;
