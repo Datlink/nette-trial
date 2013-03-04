@@ -17,6 +17,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
     public function beforeRender()
     {
         $this->template->lists = $this->listRepository->findAll()->order('title ASC');
+        if ($this->isAjax()) {
+            $this->invalidateControl('flashMessages');
+        }
     }
     
     /** Formulář pro přidání seznamu úkolů **/

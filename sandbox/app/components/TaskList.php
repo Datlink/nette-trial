@@ -38,7 +38,11 @@ class TaskListControl extends Nette\Application\UI\Control
     public function handleMarkDone($taskId)
     {
         $this->taskRepository->markDone($taskId);
-        $this->presenter->redirect('this');
+        if (!$this->presenter->isAjax()) {
+            $this->presenter->redirect('this');
+        } else {
+            $this->invalidateControl();
+        }
     }
 }
 ?>

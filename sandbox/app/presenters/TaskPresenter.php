@@ -43,7 +43,13 @@ class TaskPresenter extends BasePresenter
     {
         $this->taskRepository->createTask($this->list->id, $form->values->text, $form->values->userId);
         $this->flashMessage('Úkol přidán.', 'success');
-        $this->redirect('this');
+        if (!$this->isAjax()) { // pokud to není ajaxový request
+            $this->redirect('this'); // přesměrovat
+        } else { // pokud je tak nastavit formuláři výchozí hodnoty a zneplatnění snippetu form
+            $form->setValues(array('userId' => $form->values->userId), TRUE);
+            $this->invalidateControl('form');
+            $this['taskList']->invalidateControl();
+        }
     }
 
 
